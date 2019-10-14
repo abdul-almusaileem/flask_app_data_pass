@@ -23,32 +23,51 @@ def get_angles():
         angles.append(request.form["wrist"])
         angles = [float(angle) for angle in angles] 
 
+        send_angles(angles=angles)
         return "{}".format(angles)
 
     else:
         return render_template('from.html')    
+   
+   # this method is to test sockets to send data
+   #
+def send_angles(angles=[]):
+    # declare constants
+    #
+    HOST = "54.152.44.140"
+    PORT = 5001
     
-    # #
-    # #
-    # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    #     pass
-
-    #     # bind the socket to a specific address and a port
-    #     #
-    #     sock.bind(('0.0.0.0', 65432))
+    # initiate the socket 
+    #
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         
-    #     sock.listen()
+        # open the socket connection for the specifide host and port
+        #
+        sock.bind((HOST, PORT))
         
-    #     while True:
+        # let the socket listen for connections
+        #
+        sock.listen()
+        
+        # keep runing
+        #
+        while True:
             
-    #         # wait for connections from clients
-    #         #
-    #         conn, add = sock.accept()  
-            
-    #         with conn:
-    #             print ("Connected by", add)
-    #             conn.sendall(angles)
-        
+            # accept connection from clients
+            #
+            conn, add = sock.accept()
+    
+            with conn:
+                print("/"{}/", is connected".format(add))
+                
+                # while the connection is set
+                #
+                while True:
+                    # send angles
+                    # 
+                    for angle in angles:
+                        conn.sendall(angle)
+                    
 
 
 #
