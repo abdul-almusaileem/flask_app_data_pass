@@ -3,6 +3,7 @@
 #
 from flask import Flask, request, render_template
 import socket
+import struct
 # create the app 
 #
 app = Flask("__name__")
@@ -23,14 +24,39 @@ def get_angles():
         angles.append(request.form["wrist"])
         angles = [float(angle) for angle in angles] 
 
-        send_angles(angles=angles)
+        send_angles_no(angles=angles)
         return "{}".format(angles)
 
     else:
         return render_template('from.html')    
-   
-   # this method is to test sockets to send data
-   #
+
+
+# this method would act like a client to send the angles to the server ?
+#
+def send_angles_no(angles=[]):
+
+    print("in the socket method !!")
+    
+    # declare constants
+    #
+    HOST = "172.20.10.6"  #"172.31.34.239" #"54.152.44.140"
+    PORT = 5001
+    
+    # initiate the socket 
+    #
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        # connect to the 
+        #
+        sock.connect((HOST, PORT))
+
+        print("connected...")
+        
+        for angle in angles:
+            angle_data = struct.pack("f", angle)
+            sock.send(angle_data)
+
+# this method is to test sockets to send data
+#
 def send_angles(angles=[]):
     # declare constants
     #
@@ -58,7 +84,7 @@ def send_angles(angles=[]):
             conn, add = sock.accept()
     
             with conn:
-                print("/"{}/", is connected".format(add))
+                print("{}, is connected".format(add))
                 
                 # while the connection is set
                 #
@@ -66,7 +92,7 @@ def send_angles(angles=[]):
                     # send angles
                     # 
                     for angle in angles:
-                        conn.sendall(angle)
+                        conn.send(angle)
                     
 
 
